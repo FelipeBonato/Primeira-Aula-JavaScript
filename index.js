@@ -6,3 +6,7 @@ const somar = (1,2, function(resultado){
 });
 
 somar(numero + numero2);
+
+array.forEach(element => {
+	
+});
