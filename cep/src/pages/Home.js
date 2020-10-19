@@ -1,44 +1,76 @@
-import React, { useState } from 'react'
-import { Header } from '../components/Header'
+import React, { useEffect, useState } from "react";
+import { Header } from "../components/Header";
 
 export function Home() {
+  /**
+   * 1 - Criar o useState
+   * 2 - Colocar o valor no value do input
+   * 3 - Criar uma função chamada changeValorCep que modifica o valor baseado no evento que está vindo
+   */
 
-    const [valorCep, modificaValorCep] = useState("")
+  // Aqui nós definimos o valor
+  const [cepValue, setCepValue] = useState("");
+  const [localidade, setLocalidade] = useState("")
+  const [uf, setUf] = useState("")
+  const [logradouro, setLogradouro] = useState("")
 
+  function changeCep(evento) {
+    setCepValue(evento.target.value);
+  }
 
+  function getCepInfoByCepNumber(cepNumber) {
+    console.log("Fazendo consulta no serviço de CEP com o cep: " + cepNumber);
 
+    fetch(`https://viacep.com.br/ws/${cepNumber}/json/`)
+      .then(response => response.json())
+      .then(({ localidade, uf, logradouro }) => {
+        setLocalidade(localidade)
+        setUf(uf)
+        setLogradouro(logradouro)
+      })
+  }
 
-    return <div>
-        <Header>Cep App</Header>
-        <div className="container mt-3">
-            <div class="input-group mb-3">
-                <input
-                    value={valorCep}
-                    onChange={function (evt) {
-                        modificaValorCep(evt.target.value);
-                    }}
-                    type="text"
-                    class="form-control"
-                    placeholder="Digite o cep para buscar" />
-                <div class="input-group-append">
-                    <button
-                        className="btn btn-dark"
-                        type="button"
-                    >
-                        Verificar
-                    </button>
-                </div>
-            </div>
+  // Ao criar o componente
+  useEffect(()=> {
+    getCepInfoByCepNumber("95555000")
+  })
 
-            <div className="card mt-3">
-                <div className="card-header">Informações do cep</div>
-                <div className="card-body">
-                    <strong>Localidade: </strong> {valorCep} <br />
-                    <strong>UF: </strong> RS
-                </div>
-            </div>
+  return (
+    <div>
+      <Header>Minha App</Header>
+
+      <div className="container mt-3">
+        Cep que estou digitando: {cepValue}
+        <div className="input-group mb-3 mt-2">
+          <input
+            value={cepValue}
+            onChange={changeCep}
+            type="text"
+            className="form-control"
+            placeholder="Digite o cep para buscar"
+          />
+
+          <div className="input-group-append">
+            <button
+              className="btn btn-dark"
+              type="button"
+              onClick={function(evento){
+                getCepInfoByCepNumber(cepValue)
+              }}
+            >
+              Verificar
+            </button>
+          </div>
         </div>
+        <div className="card mt-3">
+          <div className="card-header">Informações do cep</div>
+          <div className="card-body">
+            <strong>Localidade:</strong> {localidade}  <br />
+            <strong>UF:</strong>  {uf} <br />
+            <strong>Logradouro:</strong> {logradouro}
+          </div>
+        </div>
+      </div>
     </div>
+  );
 }
-
-
